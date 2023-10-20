@@ -1,0 +1,54 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const App = () => {
+ const [todos, setTodos] = useState([]);
+ const [filter, setFilter] = useState('all');
+ const [currentTodo, setCurrentTodo] = useState({
+    id: null,
+    name: '',
+    description: '',
+    status: 'not completed',
+ });
+
+ useEffect(() => {
+    getTodos();
+ }, []);
+
+ const getTodos = async () => {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/todos');
+    setTodos(response.data);
+ };
+
+ const addTodo = async (todo) => {
+    todo.status = 'not completed';
+    const response = await axios.post('https://jsonplaceholder.typicode.com/todos', todo);
+    setTodos([...todos, response.data]);
+ };
+
+ const deleteTodo = async (id) => {
+    await axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`);
+    setTodos(todos.filter((todo) => todo.id !== id));
+ };
+
+ const updateTodo = async (id, updatedTodo) => {
+    const response = await axios.put(`https://jsonplaceholder.typicode.com/todos/${id}`, updatedTodo);
+    setTodos(todos.map((todo) => (todo.id === id ? response.data : todo)));
+ };
+
+ const changeStatus = (id, status) => {
+    const todo = todos.find((todo) => todo.id === id);
+    const updatedTodo = { ...todo, status };
+    updateTodo(id, updatedTodo);
+ };
+
+ return (
+    <div className="container">
+      <h1>Todo App</h1>
+      {/* Render the Todo list */}
+    </div>
+ );
+};
+
+export default App;
+
